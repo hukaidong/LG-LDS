@@ -1,10 +1,11 @@
 #version 400 core
-in vec2 pcoord;
-out vec4 FragColor;
+
+in vec4 vpos;
+out vec4 gl_FragColor;
 
 void main() {
-  FragColor = vec4(
-      pcoord, 
-      max(0, dot(pcoord-vec2(0.2, 0.2), vec2(-0.7, -0.7))),
-      1);
+  vec4 col = vpos;
+  col.z = 1.0-vpos.z/2;
+  col.w = 0.5;
+  gl_FragColor = col;
 }

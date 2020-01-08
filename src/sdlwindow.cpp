@@ -20,6 +20,7 @@ void sdlWindow::_handleWindowEvent(SDL_WindowEvent &event) {
     int width = event.data1;
     int length = event.data2;
     glViewport(0, 0, width, length);
+    glDepthRangef(0, 100);
   }
 }
 
@@ -35,6 +36,8 @@ sdlWindow& sdlWindow::init() {
   glcontext = SDL_GL_CreateContext(window);
 
   glewInit();
+  glEnable(GL_DEPTH_TEST);
+
   _setup();
   return *this;
 }

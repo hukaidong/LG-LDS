@@ -6,6 +6,6 @@ task :default do
     ln_sf(File.realpath('compile_commands.json'), '..')
 
     sh('make')
-    sh('./showsdl')
+    sh('./'+Dir['*show*'][0])
   end
 end
