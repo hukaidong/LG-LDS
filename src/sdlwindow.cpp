@@ -3,7 +3,7 @@
 
 void sdlWindow::_handleEvent() {
   SDL_Event event;
-  SDL_PollEvent(&event);
+  if (!SDL_PollEvent(&event)) return;
   switch (event.type) {
   case SDL_WINDOWEVENT:
     _handleWindowEvent(event.window);
@@ -37,6 +37,9 @@ sdlWindow& sdlWindow::init() {
 
   glewInit();
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   _setup();
   return *this;

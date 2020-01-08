@@ -5,7 +5,5 @@ out vec4 gl_FragColor;
 
 void main() {
   vec4 col = vpos;
-  col.z = 1.0-vpos.z/2;
-  col.w = 0.5;
-  gl_FragColor = col;
+  gl_FragColor = vec4(col.xy, distance(vec2(1, 1), col.xy), 0.8);
 }

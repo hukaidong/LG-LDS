@@ -23,9 +23,6 @@ class testSDLW: public sdlWindow {
   void glsl_program();
   void glsl_data();
 
-  std::pair<std::unique_ptr<GLfloat[]>, int> _make_vertices(); 
-  std::pair<std::unique_ptr<GLuint[]>, int> _make_indices();
-
   protected:
   virtual void _render();
   virtual void _setup();

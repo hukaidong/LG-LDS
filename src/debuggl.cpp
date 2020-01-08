@@ -54,3 +54,9 @@ void message_callback(
     severity_str << ", " << 
     id << ": " << message << std::endl;
 }
+
+void debugenable() {
+  glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  glDebugMessageCallback(message_callback, 0);
+}
