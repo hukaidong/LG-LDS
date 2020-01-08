@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include "sdlwindow.hpp"
 #include "carefulgl.hpp"
 
@@ -62,8 +64,8 @@ sdlWindow::~sdlWindow() {
 
 void sdlWindow::loop() {
   while (!_should_close) {
-    SDL_GL_MakeCurrent(window, glcontext);
     _handleEvent();
+    SDL_GL_MakeCurrent(window, glcontext);
 
     _render();
     SDL_GL_SwapWindow(window);

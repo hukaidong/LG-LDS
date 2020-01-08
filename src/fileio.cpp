@@ -34,7 +34,7 @@ loadObj(const char* fname)
 
   file.open(fname, std::fstream::in);
   while(!file.eof()) {
-    if (!file.rdstate() == std::ifstream::goodbit) {
+    if (file.rdstate() != std::ifstream::goodbit) {
       std::cout << 
         "eof " << file.eof() <<
         ", fail " << file.fail() <<
