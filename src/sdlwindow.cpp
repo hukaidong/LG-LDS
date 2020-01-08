@@ -4,13 +4,16 @@
 void sdlWindow::_handleEvent() {
   SDL_Event event;
   if (!SDL_PollEvent(&event)) return;
+
   switch (event.type) {
   case SDL_WINDOWEVENT:
     _handleWindowEvent(event.window);
     break;
   case SDL_QUIT:
     _should_close = true;
-    break;
+  //case SDL_MouseMotionEvent:
+  //case SDL_MouseButtonEvent:
+    // TODO: mouse handling
   };
 }
 
@@ -26,6 +29,9 @@ void sdlWindow::_handleWindowEvent(SDL_WindowEvent &event) {
 
 sdlWindow& sdlWindow::init() {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
+
   TTF_Init(); 
 
   window = SDL_CreateWindow("",
@@ -36,8 +42,9 @@ sdlWindow& sdlWindow::init() {
   glcontext = SDL_GL_CreateContext(window);
 
   glewInit();
-  glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
+  glEnable(GL_MULTISAMPLE);
+  glEnable(GL_DEPTH_TEST);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

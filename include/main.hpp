@@ -14,7 +14,7 @@
 
 class testSDLW: public sdlWindow {
   TTF_Font *Sans;
-  GLuint vao;
+  GLuint vaos[2];
 
   const char *vshaderloc{PROJ_DIR "/shdr/test.v.glsl"};
   const char *fshaderloc{PROJ_DIR "/shdr/test.f.glsl"};

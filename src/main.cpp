@@ -21,9 +21,11 @@
 void _sec_mvp(GLuint _program, bool show) {
   GLuint attr_idx = glGetUniformLocation(_program, "mvp");
   glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5, -0.5, 0.0));
-  glm::mat4 view = glm::lookAt(glm::vec3(2.0, 2.0, -5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 view = glm::lookAt(glm::vec3(2.0, 2.0, -10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0001));
   glm::mat4 projection = glm::infinitePerspective(
-      (0.5f*std::sin(0.3f*(float)clock()/CLOCKS_PER_SEC)+0.8f), (GLfloat)(640.0f / 480.0f), 0.1f);
+      (0.5f*std::sin(0.3f*(float)clock()/CLOCKS_PER_SEC)+0.8f), 
+      //1.1f,
+      (GLfloat)(640.0f / 480.0f), 0.1f);
   glm::mat4 mvp = projection * view * model;
 
   if (show) {
@@ -61,33 +63,61 @@ void testSDLW::glsl_program() {
   auto vsdr = fromfile(vshaderloc);
   auto fsdr = fromfile(fshaderloc);
   _use_shaders(vsdr.get(), fsdr.get());
+  debugenable();
 }
 
 void testSDLW::glsl_data() {
-  GLuint attr_idx, bd_idx=0, buffer[2];
-  attr_idx = glGetAttribLocation(_program, "cube");
+  GLuint attr_idx[2], bd_idx[]={0, 1, 2}, buffer[4];
+
+  attr_idx[0] = glGetAttribLocation(_program, "cube");
+  attr_idx[1] = glGetAttribLocation(_program, "color");
 
   auto [pary, vary] = loadObj(PROJ_DIR "/../obj/body.obj");
+  GLfloat ground[] = {
+    -10, -3,  10,
+    -10, -3, -10,
+     10, -3, -10,
+    -10, -3,  10,
+     10, -3,  10,
+     10, -3, -10,
+  };
+  GLfloat col[] = {1, 1, 1};
+
 
   glUseProgram(_program);
-  glCreateBuffers(2, buffer);
+  
+  glCreateBuffers(4, buffer);
   glNamedBufferStorage(buffer[0], sizeof(GLuint)*vary.size(), vary.data(), 0);
   glNamedBufferStorage(buffer[1], sizeof(GLfloat)*pary.size(), pary.data(), 0);
+  glNamedBufferStorage(buffer[2], sizeof(ground), ground, 0);
+  glNamedBufferStorage(buffer[3], sizeof(col), col, 0);
 
-  glCreateVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-  glEnableVertexArrayAttrib(vao, attr_idx);
-  glVertexArrayVertexBuffer(vao, bd_idx, buffer[1], 0, sizeof(GL_FLOAT)*3);
-  glVertexArrayAttribFormat(vao, attr_idx, 3, GL_FLOAT, GL_FALSE, 0);
-  glVertexArrayAttribBinding(vao, attr_idx, bd_idx);
+  glCreateVertexArrays(2, vaos);
 
-  glVertexArrayElementBuffer(vao, buffer[0]);
+  glEnableVertexArrayAttrib(vaos[0], attr_idx[0]);
+  glEnableVertexArrayAttrib(vaos[0], attr_idx[1]);
+  glVertexArrayAttribFormat(vaos[0], attr_idx[0], 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayAttribFormat(vaos[0], attr_idx[1], 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayVertexBuffer(vaos[0], bd_idx[0], buffer[1], 0, sizeof(GLfloat)*3);
+  glVertexArrayAttribBinding(vaos[0], attr_idx[0], bd_idx[0]);
+  glVertexArrayAttribBinding(vaos[0], attr_idx[1], bd_idx[0]);
+  glVertexArrayElementBuffer(vaos[0], buffer[0]);
 
-  //_sec_mvp(_program, true);
 
-  glBindVertexArray(0);
+  glEnableVertexArrayAttrib(vaos[1], attr_idx[0]);
+  glEnableVertexArrayAttrib(vaos[1], attr_idx[1]);
+  glVertexArrayAttribFormat(vaos[1], attr_idx[0], 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayAttribFormat(vaos[1], attr_idx[1], 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayVertexBuffer(vaos[1], bd_idx[1], buffer[2], 0, sizeof(GLfloat)*3);
+  glVertexArrayVertexBuffer(vaos[1], bd_idx[2], buffer[3], 0, 0);
+  glVertexArrayAttribBinding(vaos[1], attr_idx[0], bd_idx[1]);
+  glVertexArrayAttribBinding(vaos[1], attr_idx[1], bd_idx[2]);
+
   glUseProgram(0);
 }
+
+float LastFrame=0, fps=0;
+const float alpha=0.95;
 
 void testSDLW::_render() {
   color4f white = {1, 1, 1, 1},
@@ -99,37 +129,59 @@ void testSDLW::_render() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   _sec_mvp(_program, false);
+
   // primitive render {
-  glBindVertexArray(vao);
   int esize;
 
+  glBindVertexArray(vaos[0]);
   glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &esize);
   glDrawElements(GL_TRIANGLES, esize/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+  glBindVertexArray(vaos[1]);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
   glBindVertexArray(0);
   // } primitive render
 
   glUseProgram(0);
 
   // text render {
-  int texW = 0, texH = 0;
+  clock_t now = clock();
+  fps = fps*alpha + (1.0f-alpha)*
+    CLOCKS_PER_SEC/(float)((now - LastFrame)); 
 
-  SDL_Surface* smsg = 
-    TTF_RenderText_Blended(Sans, "Cube", {COLORP4F2U(&white)});
+  std::ostringstream msg_in; {
+    msg_in.setf(std::ios::fixed);
+    msg_in.precision(2);
+    msg_in.width(5);
+  }
 
-  SDL_Texture* txtr = SDL_CreateTextureFromSurface(renderer, smsg);
-  SDL_QueryTexture(txtr, NULL, NULL, &texW, &texH);
-  SDL_Rect dstrect = { 32, 32, texW, texH };
-  SDL_RenderCopy(renderer, txtr, NULL, &dstrect);
+  msg_in << "fps: " << fps << "\n";
+  msg_in << "esize: " << esize/sizeof(GLfloat);
+  
+  char buf[20];
+  int curW=5, curH=5, texW = 0, texH = 0;
+  std::istringstream msg_out(msg_in.str());
+  while (!msg_out.eof()) {
+    msg_out.getline(buf, 20);
+    SDL_Surface* smsg = TTF_RenderText_Blended(Sans, buf, {COLORP4F2U(&white)});
+    SDL_Texture* txtr = SDL_CreateTextureFromSurface(renderer, smsg);
+    SDL_QueryTexture(txtr, NULL, NULL, &texW, &texH);
+    SDL_Rect dstrect = { curW, curH, texW, texH };
+    SDL_RenderCopy(renderer, txtr, NULL, &dstrect);
+    SDL_DestroyTexture(txtr);
+    SDL_FreeSurface(smsg);
+    curH += texH;
+  }
   SDL_RenderPresent(renderer);
 
-  SDL_DestroyTexture(txtr);
-  SDL_FreeSurface(smsg);
+  LastFrame = now;
   // } text render 
 }
 
 void testSDLW::_setup() {
-  Sans = TTF_OpenFont(PROJ_DIR "/fonts/FreeSans.ttf", 18);
-
+  Sans = TTF_OpenFont(PROJ_DIR "/fonts/FreeSans.ttf", 12);
+  LastFrame = clock();
   glsl_program();
   glsl_data();
 }
