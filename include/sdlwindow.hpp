@@ -31,8 +31,6 @@ public:
 
   sdlWindow() {};
   ~sdlWindow();
-
-
 };
 
 #define COLORP4F2U(target)     \
