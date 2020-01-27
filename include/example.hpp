@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef EXAMPLE_H
+#define EXAMPLE_H
 
 #include <memory>
 
