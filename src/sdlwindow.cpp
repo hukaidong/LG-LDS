@@ -1,33 +1,11 @@
 #include "sdlwindow.hpp"
 #include "carefulgl.hpp"
 
-void sdlWindow::_handleEvent() {
-  SDL_Event event;
-  SDL_PollEvent(&event);
-  switch (event.type) {
-  case SDL_WINDOWEVENT:
-    _handleWindowEvent(event.window);
-    break;
-  case SDL_QUIT:
-    _should_close = true;
-    break;
-  };
-}
-
-void sdlWindow::_handleWindowEvent(SDL_WindowEvent &event) {
-  switch (event.event) {
-  case SDL_WINDOWEVENT_RESIZED:
-    int width = event.data1;
-    int length = event.data2;
-    glViewport(0, 0, width, length);
-  }
-}
-
 sdlWindow& sdlWindow::init() {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   TTF_Init(); 
 
-  window = SDL_CreateWindow("",
+  window = SDL_CreateWindow("SDL",
       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
       640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
@@ -35,7 +13,13 @@ sdlWindow& sdlWindow::init() {
   glcontext = SDL_GL_CreateContext(window);
 
   glewInit();
-  _setup();
+  glEnable(GL_BLEND);
+  glEnable(GL_MULTISAMPLE);
+  glEnable(GL_DEPTH_TEST);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
   return *this;
 }
 

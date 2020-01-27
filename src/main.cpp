@@ -1,48 +1,41 @@
-#include "sdlnogl.hpp"
-#include "czmq.h"
-#include <thread>
-#include <string>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
+#include "showdl.hpp"
+#include "primitives/planar.hpp"
 
-int main () {
-  zsock_t *push = zsock_new_push ("inproc://showgl");
-  zsock_t *pull = zsock_new_pull ("inproc://showgl");
 
-  set_src(pull);
-  auto drawer = std::thread(main_loop);
-  char msgbuf[1024];
+class MainShow: public sdlWindow {
+  GLuint vao;
+public:
+  MainShow& setup() {
+    auto fshader = GetBytesFromFile(PROJ_DIR "/shdr/test.f.glsl");
+    auto vshader = GetBytesFromFile(PROJ_DIR "/shdr/test.v.glsl");
+    _use_shaders(vshader.get(), fshader.get());
 
-  std::sprintf(msgbuf, "%s %f %f %f %f", 
-    "set_colorf", 0.0f, 0.0f, 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
+    GLuint vidx = glGetAttribLocation(_program, "vertex");
+    vao = Primitives::DumpTriangles(vidx);
 
-  zstr_send(push, "clear");
-
-  std::sprintf(msgbuf, "%s %f %f", "set_xlims", 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
-  std::sprintf(msgbuf, "%s %f %f", "set_ylims", 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
-
-  std::sprintf(msgbuf, "%s %f %f %f %f", "set_colorf", 1.0f, 1.0f, 1.0f, 1.0f);
-  zstr_send(push, msgbuf);
-  for (int i=0; i<10000; i++) {
-    std::sprintf(msgbuf, "%s %f %f", "draw_point", (float)rand()/RAND_MAX, (float)rand()/RAND_MAX);
-    zstr_send(push, msgbuf);
+    return *this;
   }
 
-  std::sprintf(msgbuf, "%s %f %f %f %f", "set_colorf", 1.0f, 0.0f, 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
-  std::sprintf(msgbuf, "%s %f %f %f %f", "draw_line", 0.0f, 0.0f, 1.0f, 0.0f);
-  zstr_send(push, msgbuf);
-  std::sprintf(msgbuf, "%s %f %f %f %f", "set_colorf", 0.0f, 1.0f, 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
-  std::sprintf(msgbuf, "%s %f %f %f %f", "draw_line", 0.0f, 0.0f, 0.0f, 1.0f);
-  zstr_send(push, msgbuf);
+protected: 
+  virtual void _render() {
+    glUseProgram(_program);
+    glClearColor(0, 0, 0.2, 1);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, 9);
+    glBindVertexArray(0);
+    glUseProgram(0);
+  }
 
-  drawer.join();
-  zsock_destroy (&pull);
-  zsock_destroy (&push);
+
+};
+
+int main(int argc, char *argv[])
+{
+  MainShow show;
+  show.init();
+  assign_callback();
+  show.setup();
+  show.loop();
   return 0;
 }

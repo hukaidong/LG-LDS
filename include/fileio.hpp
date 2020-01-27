@@ -3,6 +3,6 @@
 
 #include <memory>
 
-std::unique_ptr<char[]> fromfile(const char* D);
+std::unique_ptr<char[]> GetBytesFromFile(const char* D);
 
 #endif

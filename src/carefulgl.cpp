@@ -4,6 +4,8 @@
 
 namespace carefully {
 
+#ifdef DEBUG_GL
+
 void glCompileShader(GLuint shader) {
   GLint success, infol;
   char log[1024];
@@ -16,5 +18,9 @@ void glCompileShader(GLuint shader) {
   log[infol] = 0;
   std::cerr << log << std::endl;
 }
+
+#else
+void glCompileShader(GLuint shader) { glCompileShader(shader); }
+#endif
 
 }

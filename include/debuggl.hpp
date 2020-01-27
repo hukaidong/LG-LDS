@@ -1,10 +1,8 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef DEBUGGL_HPP
+#define DEBUGGL_HPP
 
 #include <GL/glew.h>
 
-void message_callback(GLenum source, GLenum type, 
-    GLuint id, GLenum severity, GLsizei length, 
-    GLchar const* message, void const* user_param);
+void assign_callback(); 
 
 #endif

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 add_definitions(-Wfatal-errors)
 add_definitions(-ggdb -o0 -std=gnu++17)
-add_definitions(-ggdb -o0 -std=gnu++17)
+add_definitions(-DDEBUG_GL)
 
 
 project(showgl C CXX)
@@ -24,12 +24,14 @@ pkg_search_module(SDL2 REQUIRED sdl2)
 pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
 pkg_search_module(SDL2TTF REQUIRED SDL2_ttf)
 pkg_search_module(CZMQ REQUIRED libczmq)
+pkg_search_module(EIGEN3 REQUIRED eigen3)
 
 include_directories(#project-showgl
                     ${PROJECT_SOURCE_DIR}/include
                     ${CZMQ_INCLUDE_DIRS}
                     ${GLEW_INCLUDE_DIRS}
                     ${SDL2_INCLUDE_DIRS}
+                    ${EIGEN3_INCLUDE_DIRS}
                     ${SDL2TTF_INCLUDE_DIRS}
                     ${SDL2IMAGE_INCLUDE_DIRS}
                    )
@@ -40,6 +42,7 @@ target_link_libraries(${PROJECT_NAME}
                       ${CZMQ_LIBRARIES}
                       ${GLEW_LIBRARIES}
                       ${SDL2_LIBRARIES}
+                      ${EIGEN3_LIBRARIES}
                       ${SDL2TTF_LIBRARIES}
                       ${SDL2IMAGE_LIBRARIES}
                      )

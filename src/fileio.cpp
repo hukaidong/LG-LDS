@@ -5,7 +5,7 @@
 
 #include "fileio.hpp"
 
-std::unique_ptr<char[]> fromfile(const char* D)
+std::unique_ptr<char[]> GetBytesFromFile(const char* D)
 {
   FILE *fptr = fopen(D, "rb"); 
   if (!fptr) { std::cerr << D << " not found" << std::endl; exit(3); }

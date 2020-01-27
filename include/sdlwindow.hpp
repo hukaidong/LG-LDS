@@ -14,7 +14,6 @@ protected:
   SDL_Renderer *renderer;
   SDL_GLContext glcontext;
 
-  virtual void _setup() {};
   virtual void _render() = 0;
 
   void _use_shaders(const char*, const char *);

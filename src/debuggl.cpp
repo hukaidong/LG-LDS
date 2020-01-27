@@ -1,6 +1,8 @@
 #include <iostream>
 #include "debuggl.hpp"
 
+#ifdef DEBUG_GL
+
 void message_callback(
     GLenum source, 
     GLenum type, 
@@ -48,9 +50,18 @@ void message_callback(
 		}
 	}();
 
-	std::cout << 
+	std::cerr << 
     src_str << ", " << 
     type_str << ", " << 
     severity_str << ", " << 
     id << ": " << message << std::endl;
 }
+void assign_callback() {
+  glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  glDebugMessageCallback(message_callback, NULL);
+}
+
+#else
+void assign_callback() {};
+#endif
