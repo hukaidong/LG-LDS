@@ -1,8 +1,8 @@
 #ifndef SHOWDL_HPP
 #define SHOWDL_HPP 
 
-#include "fileio.hpp"
-#include "sdlwindow.hpp"
+#include "byteIO.hpp"
+#include "window.hpp"
 #include "util.hpp"
 #include "carefulgl.hpp"
 #include "debuggl.hpp"

@@ -1,11 +1,11 @@
-#version 400 core 
+#version 430 core 
 
-in vec3 vertex;
+layout (location = 1) uniform mat4 mvp; 
+layout (location = 0) in vec3 vertex;
 out vec2 pcoord;
 
 void main() {
-  vec2 pos = vertex.xy;
-  gl_Position = vec4(pos, 0.0, 1.0);
-  pcoord = pos + vec2(0, 0);
+  gl_Position = mvp * vec4(vertex, 1.0);
+  pcoord = vertex.xy + vec2(0, 0);
 
 }

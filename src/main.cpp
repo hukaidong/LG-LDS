@@ -1,5 +1,5 @@
 #include "showdl.hpp"
-#include "primitives/planar.hpp"
+#include "primitives/primitives.hpp"
 
 
 class MainShow: public sdlWindow {
@@ -12,6 +12,7 @@ public:
 
     GLuint vidx = glGetAttribLocation(_program, "vertex");
     vao = Primitives::DumpTriangles(vidx);
+    // vao = Primitives::DumpCube(vidx);
 
     return *this;
   }
@@ -22,7 +23,12 @@ protected:
     glClearColor(0, 0, 0.2, 1);
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 9);
+
+    GLuint mvp = glGetUniformLocation(_program, "mvp");
+    _view_mvp_assign(mvp);
+
+    Primitives::DrawVertexArrayObject(vao);
+
     glBindVertexArray(0);
     glUseProgram(0);
   }

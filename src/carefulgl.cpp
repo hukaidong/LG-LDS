@@ -17,6 +17,7 @@ void glCompileShader(GLuint shader) {
   ::glGetShaderInfoLog(shader, 1024, &infol, log);
   log[infol] = 0;
   std::cerr << log << std::endl;
+  exit(1);
 }
 
 #else

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "fileio.hpp"
+#include "byteIO.hpp"
 
 std::unique_ptr<char[]> GetBytesFromFile(const char* D)
 {

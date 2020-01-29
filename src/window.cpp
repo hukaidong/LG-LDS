@@ -1,26 +1,28 @@
-#include "sdlwindow.hpp"
+#include "window.hpp"
 #include "carefulgl.hpp"
 
-sdlWindow& sdlWindow::init() {
+void sdlWindow::init() {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   TTF_Init(); 
 
+  height = 480;
+  width = 640;
   window = SDL_CreateWindow("SDL",
       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-      640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+      width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
   renderer = SDL_CreateRenderer(window, -1, 0);
   glcontext = SDL_GL_CreateContext(window);
 
   glewInit();
-  glEnable(GL_BLEND);
   glEnable(GL_MULTISAMPLE);
   glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-  return *this;
+  _view_mvp_init();
 }
 
 sdlWindow::~sdlWindow() {
@@ -32,9 +34,9 @@ sdlWindow::~sdlWindow() {
 }
 
 void sdlWindow::loop() {
-  while (!_should_close) {
+  while (!_event_should_close) {
     SDL_GL_MakeCurrent(window, glcontext);
-    _handleEvent();
+    _event_handleEvent();
 
     _render();
     SDL_GL_SwapWindow(window);
