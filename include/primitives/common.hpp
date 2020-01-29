@@ -9,11 +9,19 @@
 #define GLfloatUnitDegree(x) (GLfloat)cos(PI*x/180.0), (GLfloat)sin(PI*x/180.0)
 
 namespace Primitives {
-  void DrawVertexArrayObject(GLint vao) {
+  void DrawVertexArrayMesh(GLint vao) {
     GLint esize;
     glBindVertexArray(vao);
     glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &esize);
     glDrawElements(GL_TRIANGLES, esize/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+  }
+
+  void DrawVertexArrayFrame(GLint vao) {
+    GLint esize;
+    glBindVertexArray(vao);
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &esize);
+    glDrawElements(GL_LINES, esize/sizeof(GLuint), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
   }
 

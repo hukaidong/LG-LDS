@@ -19,9 +19,9 @@ void sdlWindow::_view_mvp_assign(GLuint MV, GLuint P) {
 }
 
 void sdlWindow::_view_mvp_init() {
-  mat4 transform = _view_transform(vec3(0, 0, -4), quat::Identity(), vec3(5, 5, 5));
-  model = _view_lookat({0, 2, 0}, {0, 0, -4}, {0, 1, 0}) * transform;
-  proj = _view_prespective(120, (GLfloat)width/(GLfloat)height, 0.1, 10);
+  mat4 transform = _view_transform(vec3(0, 0, -10), quat::Identity(), vec3(1, 1, 1));
+  model = _view_lookat({0, 2, 0}, {0, 0, -10}, {0, 1, 0}) * transform;
+  proj = _view_prespective(60, (GLfloat)width/(GLfloat)height, 0.1, 100);
 }
 
 void sdlWindow::_view_mvp_fresh() {
