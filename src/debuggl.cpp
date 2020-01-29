@@ -13,6 +13,7 @@ void message_callback(
     void const* user_param
     )
 {
+  if (severity==GL_DEBUG_SEVERITY_NOTIFICATION) return;
 	auto const src_str = [source]() {
 		switch (source)
 		{

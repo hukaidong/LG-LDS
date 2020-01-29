@@ -4,6 +4,7 @@
 void sdlWindow::init() {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   TTF_Init(); 
+  font = TTF_OpenFont(PROJ_DIR "/fonts/FreeSans.ttf", 18);
 
   height = 480;
   width = 640;
@@ -39,7 +40,6 @@ void sdlWindow::loop() {
     _event_handleEvent();
 
     _render();
-    SDL_GL_SwapWindow(window);
   }
 }
 

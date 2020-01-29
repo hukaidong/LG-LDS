@@ -1,7 +1,7 @@
 cmake = File.read("CMakeLists.txt")
 proj = cmake[/project\(([^\s]+) ?.*\)/, 1]
 
-task :default => :run
+task :default => :make
 
 task :cmake do
   mkdir_p './build'
@@ -19,7 +19,7 @@ end
 
 task :run => ['./build', "./build/#{proj}"] do
   chdir './build' do 
-    sh("./#{proj}") 
+    sh("./#{proj}", ENV["HOME"]+"/AFO_6Hz_Filtered/Trial_landmark_AFO.csv") 
   end
 end
 

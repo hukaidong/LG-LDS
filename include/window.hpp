@@ -25,22 +25,23 @@ public:
 
 
 protected:
-  GLuint _program;
-  GLint width, height;
-  mat4 model, proj;
+  SDL_GLContext glcontext;
+  SDL_Window   *window;
+  SDL_Renderer *renderer;
+  TTF_Font     *font;
+
+  GLuint        _program;
+  GLint         width, height;
+  mat4          model, proj;
 
   virtual void _render() = 0;
 
   void _use_shaders(const char*, const char *);
   void _view_mvp_assign(GLuint);
   void _view_mvp_assign(GLuint, GLuint);
+  bool _event_should_close = false;
 
 private:
-  SDL_Window   *window;
-  SDL_Renderer *renderer;
-  SDL_GLContext glcontext;
-
-  bool _event_should_close = false;
   void _event_handleEvent();
   void _event_windowEvent(SDL_WindowEvent &event);
   void _view_mvp_init();
